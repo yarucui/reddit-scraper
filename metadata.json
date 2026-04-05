@@ -1,0 +1,5 @@
+{
+  "name": "Reddit Socioeconomic Bias Scraper",
+  "description": "A tool to scrape Reddit posts and score them for ambiguity between risky and safe options using Gemini AI.",
+  "requestFramePermissions": []
+}
