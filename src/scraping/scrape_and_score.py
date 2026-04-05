@@ -4,10 +4,21 @@ import google.generativeai as genai
 import time
 import os
 import json
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # SETUP
-# Gemini API key: The user should set this in their environment
-API_KEY = os.getenv("GEMINI_API_KEY")
+# Gemini API key: The user should set this in their .env file
+API_KEY = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+
+if not API_KEY:
+    print("ERROR: No API Key found.")
+    print("Please set your API key in PowerShell before running:")
+    print('$env:GEMINI_API_KEY = "your_actual_key_here"')
+    exit(1)
+
 genai.configure(api_key=API_KEY)
 MODEL_NAME = "gemini-2.0-flash-lite"
 USER_AGENT = "ses_bias_research/1.0"
