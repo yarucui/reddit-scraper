@@ -21,7 +21,7 @@ if not API_KEY:
 
 genai.configure(api_key=API_KEY)
 MODEL_NAME = "gemini-2.0-flash-lite"
-USER_AGENT = "ses_bias_research/1.0"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 DELAY = 2
 
 SUBREDDITS = {
@@ -49,6 +49,16 @@ def fetch_posts(subreddit, domain):
         try:
             print(f"Fetching {url}...")
             res = requests.get(url, headers={"User-Agent": USER_AGENT})
+            
+            if res.status_code == 429:
+                print("Rate limited (429). Sleeping for 60 seconds...")
+                time.sleep(60)
+                res = requests.get(url, headers={"User-Agent": USER_AGENT})
+
+            if res.status_code != 200:
+                print(f"Error: Received status {res.status_code} from Reddit")
+                continue
+
             data = res.json()
             for child in data['data']['children']:
                 p = child['data']
@@ -82,6 +92,16 @@ def fetch_comments(subreddit, post_id):
     url = f"https://www.reddit.com/r/{subreddit}/comments/{post_id}.json"
     try:
         res = requests.get(url, headers={"User-Agent": USER_AGENT})
+        
+        if res.status_code == 429:
+            print("Rate limited (429) on comments. Sleeping for 30 seconds...")
+            time.sleep(30)
+            res = requests.get(url, headers={"User-Agent": USER_AGENT})
+
+        if res.status_code != 200:
+            print(f"Error fetching comments: Status {res.status_code}")
+            return []
+
         data = res.json()
         comments = []
         for child in data[1]['data']['children']:
